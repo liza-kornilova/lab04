@@ -41,7 +41,7 @@ def register():
 
         conn.close()
 
-    return render_template('register.html')
+    return render_template('templates_register.html')
 
 # Вхід користувача
 @app.route('/login', methods=['GET', 'POST'])
@@ -62,7 +62,7 @@ def login():
         else:
             flash('Невірний логін або пароль!', 'danger')
 
-    return render_template('login.html')
+    return render_template('templates_login.html')
 
 # Особистий кабінет
 @app.route('/dashboard')
@@ -70,7 +70,7 @@ def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    return render_template('dashboard.html', username=session['username'])
+    return render_template('templates_dashboard.html', username=session['username'])
 
 # Вихід
 @app.route('/logout')
