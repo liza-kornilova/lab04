@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Про компанію | ТрансЕкспрес</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .navbar-links {
+            display: flex;
+        }
+        
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+        }
+        
+        .navbar-links a:hover {
+            background-color: #444;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .flash-messages {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .flash-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .flash-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .about-section {
+            margin-bottom: 30px;
+        }
+        
+        .about-section h2 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .about-image {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .navbar-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                background-color: #333;
+            }
+            
+            .navbar-links.active {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">ТрансЕкспрес</div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="navbar-links" id="navbarLinks">
+            <a href="/">Головна</a>
+            <a href="/about">Про компанію</a>
+            <a href="/services">Послуги</a>
+            <a href="/contacts">Контакти</a>
+            {% if current_user.is_authenticated %}
+            <a href="/dashboard">Особистий кабінет</a>
+            <a href="/logout">Вихід</a>
+            {% else %}
+            <a href="/login">Вхід</a>
+            <a href="/register">Реєстрація</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-messages flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="main-content">
+        <h1>Про компанію ТрансЕкспрес</h1>
+        
+        <div class="about-section">
+            <h2>Історія компанії</h2>
+            <p>Компанія ТрансЕкспрес була заснована у 2010 році групою професіоналів з багаторічним досвідом роботи у сфері пасажирських перевезень.</p>
+            <p>За 15 років роботи ми стали одним із лідерів ринку пасажирських перевезень у країні, постійно розширюючи географію маршрутів та підвищуючи якість обслуговування.</p>
+        </div>
+        
+        <div class="about-section">
+            <h2>Наша місія</h2>
+            <p>Місія компанії ТрансЕкспрес — забезпечувати комфортні, безпечні та доступні пасажирські перевезення, роблячи подорожі наших клієнтів приємними та безтурботними.</p>
+            <p>Ми прагнемо створити сучасний стандарт якості у сфері пасажирських перевезень, впроваджуючи інноваційні технології та постійно вдосконалюючи сервіс.</p>
+        </div>
+        
+        <div class="about-section">
+            <h2>Наші цінності</h2>
+            <ul>
+                <li><strong>Безпека</strong> — головний пріоритет у нашій роботі.</li>
+                <li><strong>Комфорт</strong> — ми дбаємо про те, щоб поїздка була приємною.</li>
+                <li><strong>Пунктуальність</strong> — цінуємо ваш час і дотримуємося розкладу.</li>
+                <li><strong>Клієнтоорієнтованість</strong> — ми завжди прислухаємося до побажань клієнтів.</li>
+                <li><strong>Професіоналізм</strong> — наші співробітники — експерти у своїй справі.</li>
+            </ul>
+        </div>
+        
+        <div class="about-section">
+            <h2>Наш автопарк</h2>
+            <p>Автопарк компанії ТрансЕкспрес включає понад 100 сучасних і комфортабельних автобусів різної місткості, від мікроавтобусів до туристичних лайнерів.</p>
+            <p>Усі транспортні засоби регулярно проходять технічне обслуговування та оснащені необхідним обладнанням для забезпечення безпеки та комфорту пасажирів.</p>
+        </div>
+        
+        <div class="about-section">
+            <h2>Наші досягнення</h2>
+            <ul>
+                <li>Понад 1 000 000 перевезених пасажирів</li>
+                <li>Понад 50 міст у маршрутній мережі</li>
+                <li>Понад 200 кваліфікованих співробітників</li>
+                <li>Численні нагороди та сертифікати якості</li>
+            </ul>
+        </div>
+    </div>
+    
+    <style>
+        /* … ваши существующие правила … */
+    
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 100px;  /* space before footer */
+        }
+    </style>
+    
+    <div class="footer">
+        &copy; 2025 ТрансЕкспрес. Усі права захищені.
+    </div>
+    
+    <script>
+        function toggleMenu() {
+            var navbarLinks = document.getElementById("navbarLinks");
+            navbarLinks.classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

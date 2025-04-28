@@ -1,82 +1,124 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-import sqlite3
-from transport_company import TransportCompany
+from flask import Flask, render_template, redirect, url_for, request, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
+# Инициализация приложения
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Для безпеки сесій
-company = TransportCompany()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SECRET_KEY'] = 'secret123'
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
-# Підключення до бази
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+# Модель пользователя
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    role = db.Column(db.String(10), nullable=False, default="client")  # client или admin
 
-# Головна сторінка
+# Загрузка пользователя Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Главная страница
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Реєстрація нового користувача
+# О компании
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# Услуги
+@app.route('/services')
+def services():
+    return render_template('services.html')
+
+# Контакты
+@app.route('/contacts', methods=['GET', 'POST'])
+def contacts():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        subject = request.form['subject']
+        message = request.form['message']
+        
+        # Здесь можно добавить логику для сохранения сообщения в базу данных
+        # или отправки его на электронную почту
+        
+        flash('Спасибо за обращение! Мы свяжемся с вами в ближайшее время.', 'success')
+        return redirect(url_for('contacts'))
+        
+    return render_template('contacts.html')
+
+# Регистрация
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        if User.query.filter_by(username=username).first():
+            flash('Такой логин уже существует!', 'danger')
+            return redirect(url_for('register'))
+            
+        new_user = User(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            password=password
+        )
         
-        # Перевірка, чи є такий користувач
-        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-        existing_user = cursor.fetchone()
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash('Регистрация успешна! Теперь войдите.', 'success')
+        return redirect(url_for('login'))
+        
+    return render_template('register.html')
 
-        if existing_user:
-            flash('Користувач вже існує!', 'danger')
-        else:
-            cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-            conn.commit()
-            flash('Реєстрація успішна! Тепер увійдіть.', 'success')
-            return redirect(url_for('login'))
-
-        conn.close()
-
-    return render_template('templates_register.html')
-
-# Вхід користувача
+# Вход
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-        user = cursor.fetchone()
-        conn.close()
-
-        if user:
-            session['username'] = username
+        user = User.query.filter_by(username=username).first()
+        
+        if user and bcrypt.check_password_hash(user.password, password):
+            login_user(user)
             return redirect(url_for('dashboard'))
         else:
-            flash('Невірний логін або пароль!', 'danger')
+            flash('Неверный логин или пароль!', 'danger')
+            
+    return render_template('login.html')
 
-    return render_template('templates_login.html')
-
-# Особистий кабінет
+# Личный кабинет
 @app.route('/dashboard')
+@login_required
 def dashboard():
-    if 'username' not in session:
-        return redirect(url_for('login'))
+    return render_template('dashboard.html', user=current_user)
 
-    return render_template('templates_dashboard.html', username=session['username'])
-
-# Вихід
+# Выход
 @app.route('/logout')
+@login_required
 def logout():
-    session.pop('username', None)
+    logout_user()
+    flash('Вы вышли из учетной записи', 'info')
     return redirect(url_for('index'))
 
+# Запуск приложения
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Создает базу данных при первом запуске
     app.run(debug=True)

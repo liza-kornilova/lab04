@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Послуги | ТрансЕкспрес</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .navbar-links {
+            display: flex;
+        }
+        
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+        }
+        
+        .navbar-links a:hover {
+            background-color: #444;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-bottom: 100px;
+        }
+        
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .flash-messages {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .flash-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .flash-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .service-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .service-card h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .service-icon {
+            font-size: 40px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .navbar-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                background-color: #333;
+            }
+            
+            .navbar-links.active {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">ТрансЕкспрес</div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="navbar-links" id="navbarLinks">
+            <a href="/">Головна</a>
+            <a href="/about">Про компанію</a>
+            <a href="/services">Послуги</a>
+            <a href="/contacts">Контакти</a>
+            {% if current_user.is_authenticated %}
+            <a href="/dashboard">Особистий кабінет</a>
+            <a href="/logout">Вихід</a>
+            {% else %}
+            <a href="/login">Вхід</a>
+            <a href="/register">Реєстрація</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-messages flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="main-content">
+        <h1>Послуги компанії ТрансЕкспрес</h1>
+        <p>Ми пропонуємо широкий спектр послуг у сфері пасажирських перевезень. Оберіть найбільш підходящий для вас варіант.</p>
+        
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fas fa-bus"></i>
+            </div>
+            <h2>Регулярні міжміські перевезення</h2>
+            <p>Ми здійснюємо регулярні рейси між великими містами країни на комфортабельних автобусах. Розклад складено з урахуванням побажань пасажирів.</p>
+            <ul>
+                <li>Зручний розклад</li>
+                <li>Комфортабельні автобуси</li>
+                <li>Досвідчені водії</li>
+                <li>Система знижок для постійних клієнтів</li>
+            </ul>
+        </div>
+        
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fas fa-suitcase"></i>
+            </div>
+            <h2>Туристичні поїздки</h2>
+            <p>Ми організовуємо туристичні поїздки цікавими маршрутами з відвідуванням визначних пам'яток та комфортним розміщенням.</p>
+            <ul>
+                <li>Різноманітні маршрути</li>
+                <li>Досвідчені гіди</li>
+                <li>Комфортне розміщення</li>
+                <li>Цікава програма</li>
+            </ul>
+        </div>
+        
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <h2>Корпоративні перевезення</h2>
+            <p>Ми пропонуємо послуги корпоративних перевезень для компаній. Організовуємо доставку співробітників, трансфери для гостей, перевезення на корпоративні заходи.</p>
+            <ul>
+                <li>Індивідуальний підхід</li>
+                <li>Гнучкий графік</li>
+                <li>Транспорт різної місткості</li>
+                <li>Довгострокова співпраця</li>
+            </ul>
+        </div>
+        
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h2>Групові перевезення</h2>
+            <p>Ми організовуємо перевезення груп різної чисельності для шкільних екскурсій, спортивних команд, творчих колективів та інших організованих груп.</p>
+            <ul>
+                <li>Безпека для дитячих груп</li>
+                <li>Транспорт різної місткості</li>
+                <li>Супровід груп</li>
+                <li>Спеціальні тарифи</li>
+            </ul>
+        </div>
+        
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <h2>Вантажоперевезення</h2>
+            <p>Ми здійснюємо перевезення малогабаритних вантажів між містами нашої маршрутної мережі. Швидка і надійна доставка вантажів.</p>
+            <ul>
+                <li>Оперативна доставка</li>
+                <li>Гарантія збереження</li>
+                <li>Розумні тарифи</li>
+                <li>Можливість відстеження</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        &copy; 2025 ТрансЕкспрес. Усі права захищені.
+    </div>
+    
+    <script>
+        function toggleMenu() {
+            var navbarLinks = document.getElementById("navbarLinks");
+            navbarLinks.classList.toggle("active");
+        }
+    </script>
+</body>
+</html>
