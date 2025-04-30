@@ -50,8 +50,7 @@ def contacts():
         subject = request.form['subject']
         message = request.form['message']
         
-        # Здесь можно добавить логику для сохранения сообщения в базу данных
-        # или отправки его на электронную почту
+      
         
         flash('Спасибо за обращение! Мы свяжемся с вами в ближайшее время.', 'success')
         return redirect(url_for('contacts'))
